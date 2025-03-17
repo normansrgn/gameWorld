@@ -10,16 +10,18 @@
   <body>
     <header class="header">
       <div class="container header__container">
-        <a href="/">
+        <a href="./index.html">
           <div class="header__logo">
             <img src="./img/logo.png" alt="" />
           </div>
         </a>
         <nav class="header__nav">
           <li>
-            <a class="headernav" href="/"> Главная </a>
+            <a class="headernav" href="./index.html"> Главная </a>
           </li>
-          <li>Игры</li>
+          <li>
+            <a class="headernav" href="./catalog.html"> Игры </a>
+          </li>
           <li>Мой профиль</li>
         </nav>
       </div>
@@ -172,8 +174,10 @@
         searchInput.addEventListener("input", () => {
           const query = searchInput.value.toLowerCase();
 
-          gameCards.forEach(card => {
-            const title = card.querySelector(".cardtextTitle").textContent.toLowerCase();
+          gameCards.forEach((card) => {
+            const title = card
+              .querySelector(".cardtextTitle")
+              .textContent.toLowerCase();
             if (title.includes(query)) {
               card.closest(".col-xxl-3").style.display = "block";
             } else {
