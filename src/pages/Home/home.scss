@@ -1,0 +1,56 @@
+.home {
+  &__title {
+    width: 900px;
+    font-size: 21px;
+    color: white;
+    // font-weight: bold;
+  }
+
+  &__popularTitle {
+    margin-top: 60px;
+    font-size: 21px;
+    text-align: center;
+  }
+
+  &__filter-search {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #2c2c2c;
+      border-radius: 8px;
+  }
+
+  &__filters {
+      display: flex;
+      gap: 15px;
+  }
+
+  &__filter-label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+  }
+
+  &__filter-label input {
+      transform: scale(1.2);
+      cursor: pointer;
+  }
+
+  &__search {
+      padding: 8px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      width: 500px;
+  }
+
+  &__search::placeholder {
+      color: #aaa;
+  }
+}
