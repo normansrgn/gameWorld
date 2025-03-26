@@ -21,10 +21,12 @@ export default function Home() {
         setSearchQuery(event.target.value);
     };
 
-    const filteredGames = games.filter((game) =>
-        (selectedCategory === "all" || game.category === selectedCategory) &&
-        game.title.toLowerCase().includes(searchQuery.toLowerCase())
-    ).slice(0, 8);
+    const filteredGames = games
+        .slice(0, 8)
+        .filter((game) =>
+            (selectedCategory === "all" || game.category === selectedCategory) &&
+            game.title.toLowerCase().includes(searchQuery.toLowerCase())
+        );
 
     return (
         <>

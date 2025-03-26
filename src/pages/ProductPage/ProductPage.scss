@@ -1,0 +1,56 @@
+.productPage {
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+  }
+
+  &__title {
+    font-size: 45px;
+    font-weight: bold;
+  }
+
+  &__price {
+    font-size: 35px;
+    font-weight: bold;
+  }
+
+  &__titleblock {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__btn {
+    padding: 8px;
+    background-color: white;
+    color: #646cff;
+    font-size: 21px;
+    font-weight: bold;
+    border-radius: 19px;
+    border: 2px solid #646cff;
+    width: 300px;
+    transition: 0.2s ease-in;
+
+    &:hover {
+      background-color: #646cff;
+      color: white;
+    }
+  }
+
+  &__description {
+    font-size: 20px;
+  }
+
+  &__d {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__disTitle {
+    font-size: 27px;
+    font-weight: bold;
+  }
+}

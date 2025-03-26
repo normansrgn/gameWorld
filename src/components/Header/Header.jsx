@@ -16,10 +16,12 @@ export default function Header() {
         <>
             <header className="header">
                 <Container className="header__container">
-                    <div className="header__logo">
-                        <img src={logo} alt="" />
+                    <Link to="/">
+                        <div className="header__logo">
+                            <img src={logo} alt="" />
 
-                    </div>
+                        </div>
+                    </Link>
 
                     <nav className="header__nav">
                         <ol>
