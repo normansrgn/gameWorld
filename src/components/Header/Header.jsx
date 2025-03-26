@@ -7,7 +7,11 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 import { Link } from "react-router-dom";
 
+
 import logo from "./logo.png"
+
+import { FaShoppingBasket } from "react-icons/fa";
+
 
 export default function Header() {
 
@@ -32,6 +36,7 @@ export default function Header() {
                                 <li>Игры</li>
                             </Link>
                             <li>Мой профиль</li>
+
                         </ol>
                     </nav>
 

@@ -14,6 +14,7 @@ import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 import Games from "./pages/Games/Games";
 import ProductPage from "./pages/ProductPage/ProductPage";
+import Basket from "./pages/Basket/Basket";
 
 export default function App() {
   const location = useLocation();
@@ -26,6 +27,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/games" element={<Games />} />
+          <Route path="/basket" element={<Basket />} />
 
           <Route path="/product/:id" element={<ProductPage />} /> {/* Обратите внимание на :id */}
 

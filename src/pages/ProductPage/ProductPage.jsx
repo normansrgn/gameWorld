@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import games from "../../components/GameCard/cards";  // Импортируем массив с товарами
 import "./ProductPage.scss";
@@ -17,28 +17,42 @@ export default function ProductPage() {
         return <div>Товар не найден</div>;
     }
 
-    return (
-        <>
+    const addToBasket = () => {
+        const basket = JSON.parse(localStorage.getItem("basket")) || [];
+        basket.push(product);
+        localStorage.setItem("basket", JSON.stringify(basket));
+    };
 
-            <div className="productPage">
-                <Container className="productPage__container">
-                    <div className="productPage__img">
-                        <img src={product.img} alt={product.title} />
+    return (
+        <div className="productPage">
+            <Container className="productPage__container">
+                <div className="productPage__img">
+                    <img src={product.img} alt={product.title} />
+                </div>
+                <div className="productPage__text">
+                    <div className="productPage__titleblock">
+                        <div className="productPage__title">{product.title}</div>
+                        <div className="productPage__price">{product.price} ₽</div>
                     </div>
-                    <div className="productPage__text">
-                        <div className="productPage__titleblock">
-                            <div className="productPage__title">{product.title}</div>
-                            <div className="productPage__price">{product.price} ₽</div>
-                            <button className="productPage__btn">Добавить в корзину</button>
+                    <div className="productPage__d">
+                        <div className="productPage__disTitle">О игре</div>
+                        <div className="productPage__description">{product.description}</div>
+                        <div>
+                            <div className="productPage__disTitle">Где скачать:</div> {product.download}
                         </div>
-                        <div className="productPage__d">
-                            <div className="productPage__disTitle">О товаре</div>
-                            <div className="productPage__description">{product.description}
-                            </div>
+                        <div>
+                            <div className="productPage__disTitle">Системные требования:</div>
+                            <ul>
+                                <li>ОС:{product.systemRequirements.OS}</li>
+                                <li>Процессор: {product.systemRequirements.Processor}</li>
+                                <li>Оперативная память: {product.systemRequirements.Memory}</li>
+                                <li>Видеокарта: {product.systemRequirements.Graphics}</li>
+                                <li>Место на диске: {product.systemRequirements.Storage}</li>
+                            </ul>
                         </div>
                     </div>
-                </Container>
-            </div>
-        </>
+                </div>
+            </Container>
+        </div>
     );
 }
