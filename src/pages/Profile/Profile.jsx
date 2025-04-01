@@ -65,13 +65,13 @@ export default function Profile() {
             // Загружаем файл в Firebase Storage
             const storageRef = ref(storage, `avatars/${user.uid}/${file.name}`);
             await uploadBytes(storageRef, file);
-            
+
             // Получаем URL загруженного файла
             const photoURL = await getDownloadURL(storageRef);
-            
+
             // Обновляем профиль пользователя
             await updateProfile(auth.currentUser, { photoURL });
-            
+
             // Обновляем состояние
             setUser(prev => ({ ...prev, photo: photoURL }));
             setSuccess("Аватар успешно обновлён!");
@@ -88,10 +88,10 @@ export default function Profile() {
             setUploading(true);
             setError("");
             setSuccess("");
-            
+
             // Устанавливаем стандартный аватар
             await updateProfile(auth.currentUser, { photoURL: "" });
-            
+
             // Обновляем состояние
             setUser(prev => ({ ...prev, photo: "https://via.placeholder.com/150" }));
             setSuccess("Аватар удалён");
@@ -107,7 +107,7 @@ export default function Profile() {
         <div className="profile-page">
             <Container className="py-5">
                 <h2 className="text-center mb-5">Мой профиль</h2>
-                
+
                 {loading ? (
                     <div className="text-center">
                         <Spinner animation="border" variant="primary" />
@@ -117,7 +117,7 @@ export default function Profile() {
                     <Card className="profile-card shadow">
                         <Card.Body className="p-4">
                             <div className="text-center mb-4 position-relative">
-                                <div className="profile-avatar mx-auto">
+                                {/* <div className="profile-avatar mx-auto">
                                     <img 
                                         src={user.photo} 
                                         alt="Аватар" 
@@ -146,7 +146,7 @@ export default function Profile() {
                                             )}
                                         </>
                                     )}
-                                </div>
+                                </div> */}
                                 <input
                                     type="file"
                                     ref={fileInputRef}
@@ -187,7 +187,7 @@ export default function Profile() {
                                     </div>
                                 </div>
 
-                                <div className="info-item d-flex align-items-center mb-4">
+                                {/* <div className="info-item d-flex align-items-center mb-4">
                                     <div className="icon-circle bg-info">
                                         <FaPhone className="text-white" />
                                     </div>
@@ -195,12 +195,12 @@ export default function Profile() {
                                         <h6 className="mb-0">Телефон</h6>
                                         <p className="mb-0">{user.phone}</p>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
 
                             <div className="text-center mt-4">
-                                <Button 
-                                    variant="danger" 
+                                <Button
+                                    variant="danger"
                                     onClick={handleLogout}
                                     className="logout-btn"
                                     disabled={uploading}

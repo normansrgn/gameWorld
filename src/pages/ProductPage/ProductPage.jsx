@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { auth } from "../../../firebaseconfig";
-import games from "../../components/GameCard/cards";  
+import games from "../../components/GameCard/cards";
 import "./ProductPage.scss";
 import { Container, Form, Button, Card, ListGroup, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -50,8 +50,8 @@ export default function ProductPage() {
             return;
         }
 
-        const commentObject = { 
-            name: userName, 
+        const commentObject = {
+            name: userName,
             text: newComment,
             rating: rating,
             date: new Date().toLocaleDateString()
@@ -88,11 +88,11 @@ export default function ProductPage() {
                 <div className="row">
                     {/* Левая колонка - изображение */}
                     <div className="col-md-4 mb-4">
-                        <Card  className="card h-100 product-image-card">
+                        <Card className="card h-100 product-image-card">
                             <Card.Img variant="top" src={product.img} alt={product.title} className="product-image" />
                         </Card>
                     </div>
-                    
+
                     {/* Правая колонка - информация */}
                     <div className="col-md-8">
                         <Card className="mb-4 product-info-card">
@@ -101,13 +101,13 @@ export default function ProductPage() {
                                     <Card.Title className="mb-0 product-title">{product.title}</Card.Title>
                                     <span className="badge bg-primary product-price">{product.price} ₽</span>
                                 </div>
-                                
+
                                 <Card.Subtitle className="mb-2 text-muted product-category">{product.category}</Card.Subtitle>
-                                
+
                                 <Card.Text className="mt-3 product-description">
                                     <strong>О игре:</strong> {product.description}
                                 </Card.Text>
-                                
+
                                 <Card.Text className="product-download">
                                     <strong>Где скачать:</strong> {product.download}
                                 </Card.Text>
@@ -131,34 +131,34 @@ export default function ProductPage() {
                             <Card.Header as="h5">Комментарии ({comments.length})</Card.Header>
                             <Card.Body className="p-0">
                                 {error && <Alert variant="danger" className="comment-error m-3">{error}</Alert>}
-                                
+
                                 {auth.currentUser ? (
                                     <div className="comment-form p-3 border-bottom">
                                         <Form.Group className="mb-3">
                                             <Form.Label>Ваш комментарий</Form.Label>
-                                            <Form.Control 
-                                                as="textarea" 
-                                                rows={3} 
+                                            <Form.Control
+                                                as="textarea"
+                                                rows={3}
                                                 value={newComment}
                                                 onChange={(e) => setNewComment(e.target.value)}
                                                 placeholder="Поделитесь своим мнением об игре..."
                                                 className="comment-textarea"
                                             />
                                         </Form.Group>
-                                        
+
                                         <Form.Group className="mb-3 rating-group">
                                             <Form.Label>Оценка: <span className="rating-value">{rating}</span>/5</Form.Label>
-                                            <Form.Range 
-                                                min="1" 
-                                                max="5" 
+                                            <Form.Range
+                                                min="1"
+                                                max="5"
                                                 value={rating}
                                                 onChange={(e) => setRating(e.target.value)}
                                                 className="rating-slider"
                                             />
                                         </Form.Group>
-                                        
-                                        <Button 
-                                            variant="primary" 
+
+                                        <Button
+                                            variant="primary"
                                             onClick={addComment}
                                             disabled={!newComment.trim()}
                                             className="submit-comment-btn"
@@ -167,9 +167,11 @@ export default function ProductPage() {
                                         </Button>
                                     </div>
                                 ) : (
-                                    <Alert variant="info" className="auth-alert m-3">
-                                        Войдите в аккаунт, чтобы оставить комментарий
-                                    </Alert>
+                                    <Link to="/auth">
+                                        <Alert variant="info" className="auth-alert m-3">
+                                            Войдите в аккаунт, чтобы оставить комментарий
+                                        </Alert>
+                                    </Link>
                                 )}
 
                                 <div className="comments-list-container" style={{ maxHeight: '500px', overflowY: 'auto' }}>
@@ -187,8 +189,8 @@ export default function ProductPage() {
                                                     </div>
                                                     <div className="rating-stars mb-2">
                                                         {[...Array(5)].map((_, i) => (
-                                                            <span 
-                                                                key={i} 
+                                                            <span
+                                                                key={i}
                                                                 className={i < comment.rating ? "star-filled" : "star-empty"}
                                                             >
                                                                 ★
