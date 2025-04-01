@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Profiler } from "react";
 import ReactDOM from "react-dom/client";
 import { Routes, Route, useLocation } from "react-router-dom";
 import reactLogo from './assets/react.svg'
@@ -14,23 +14,25 @@ import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 import Games from "./pages/Games/Games";
 import ProductPage from "./pages/ProductPage/ProductPage";
-import Basket from "./pages/Basket/Basket";
+import Auth from "./pages/Auth/Auth";
+import Profile from "./pages/Profile/Profile";
+import ScrollToTop from "./components/ScrollTop/ScrollTop";
 
 export default function App() {
   const location = useLocation();
 
   return (
     <>
+    <ScrollToTop />
       <Header />
       <main>
 
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/games" element={<Games />} />
-          <Route path="/basket" element={<Basket />} />
-
+          <Route path="/auth" element={<Auth />} />
           <Route path="/product/:id" element={<ProductPage />} /> {/* Обратите внимание на :id */}
-
+          <Route path="/profile" element={<Profile />} />
         </Routes>
 
       </main>
