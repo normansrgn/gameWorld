@@ -9,15 +9,12 @@ export default function Footer() {
             <Container>
                 <Row className="footer-content">
                     <Col md={4} className="footer-section">
-                        <h5 className="footer-title">GameWorld</h5>
+                        <h5 className="footer-title">ИгроМир</h5>
                         <p className="footer-text">
                             Лучший выбор игр для всех платформ. Мы предлагаем самые популярные новинки и классические хиты.
                         </p>
                         <div className="social-links">
-                            <a href="#" className="social-link"><FaFacebook /></a>
-                            <a href="#" className="social-link"><FaTwitter /></a>
-                            <a href="#" className="social-link"><FaInstagram /></a>
-                            <a href="#" className="social-link"><FaYoutube /></a>
+
                         </div>
                     </Col>
 
@@ -37,7 +34,7 @@ export default function Footer() {
                         <ul className="contact-info">
                             <li>
                                 <FaMapMarkerAlt className="contact-icon" />
-                                <span>г. Москва, ул. Примерная, 123</span>
+                                <span>г. Краснодар, ул. Примерная, 123</span>
                             </li>
                             <li>
                                 <FaPhone className="contact-icon" />
