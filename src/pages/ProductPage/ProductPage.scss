@@ -239,3 +239,12 @@ height: 2500px;
     }
   }
 }
+
+.product-info-card {
+  .btn-outline-primary {
+      transition: all 0.3s ease;
+  }
+  .btn-outline-danger {
+      transition: all 0.3s ease;
+  }
+}

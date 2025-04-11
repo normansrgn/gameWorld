@@ -17,6 +17,7 @@ export default function ProductPage() {
     const [error, setError] = useState("");
     const [authChecked, setAuthChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [isFavorite, setIsFavorite] = useState(false);
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -26,13 +27,17 @@ export default function ProductPage() {
             setAuthChecked(true);
         });
 
-        // Загрузка комментариев с задержкой для демонстрации
+        // Загрузка комментариев
         const timer = setTimeout(() => {
             const savedComments = JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
             const productComments = product?.comments || [];
             setComments([...productComments, ...savedComments]);
             setIsLoading(false);
         }, 500);
+
+        // Проверка, находится ли игра в избранном
+        const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+        setIsFavorite(favorites.includes(id));
 
         return () => {
             unsubscribe();
@@ -57,11 +62,31 @@ export default function ProductPage() {
             date: new Date().toLocaleDateString()
         };
 
-        const updatedComments = [commentObject, ...comments]; // Новые комментарии сверху
+        const updatedComments = [commentObject, ...comments];
         setComments(updatedComments);
         localStorage.setItem(`comments_${id}`, JSON.stringify(updatedComments));
         setNewComment("");
         setError("");
+    };
+
+    const toggleFavorite = () => {
+        if (!auth.currentUser) {
+            setError("Вы должны быть авторизованы для добавления в избранное.");
+            return;
+        }
+
+        const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+        let updatedFavorites;
+
+        if (isFavorite) {
+            updatedFavorites = favorites.filter(favId => favId !== id);
+            setIsFavorite(false);
+        } else {
+            updatedFavorites = [...favorites, id];
+            setIsFavorite(true);
+        }
+
+        localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
     };
 
     if (!product) {
@@ -111,6 +136,14 @@ export default function ProductPage() {
                                 <Card.Text className="product-download">
                                     <strong>Где скачать:</strong> {product.download}
                                 </Card.Text>
+
+                                <Button
+                                    variant={isFavorite ? "outline-danger" : "outline-primary"}
+                                    onClick={toggleFavorite}
+                                    className="mt-3"
+                                >
+                                    {isFavorite ? "Удалить из избранного" : "Добавить в избранное"}
+                                </Button>
                             </Card.Body>
                         </Card>
 

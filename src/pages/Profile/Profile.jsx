@@ -1,21 +1,40 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Container, Button, Card, Spinner, Form, Alert } from "react-bootstrap";
-import { auth, storage } from "../../../firebaseconfig";
-import { signOut, updateProfile } from "firebase/auth";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
-import { FaUser, FaEnvelope, FaPhone, FaSignOutAlt, FaCamera, FaTimes } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { Container, Button, Card, Spinner, Alert, ListGroup } from "react-bootstrap";
+import { auth } from "../../../firebaseconfig";
+import { signOut } from "firebase/auth";
+import { useNavigate, Link } from "react-router-dom";
+import { FaUser, FaEnvelope, FaSignOutAlt, FaHeart } from "react-icons/fa";
+import games from "../../components/GameCard/cards";
 
 import "./Profile.scss";
 
 export default function Profile() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [uploading, setUploading] = useState(false);
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
-    const fileInputRef = useRef(null);
+    const [favorites, setFavorites] = useState([]);
     const navigate = useNavigate();
+
+    // Basic game-themed SVG avatar (pixelated character head)
+    const defaultAvatar = (
+        <svg
+            width="150"
+            height="150"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="rounded-circle"
+        >
+            <rect width="24" height="24" fill="#e0e0e0" />
+            <path
+                d="M7 6H17V10H7V6ZM8 7H9V8H8V7ZM15 7H16V8H15V7ZM10 12H14V14H10V12ZM11 16H13V18H11V16Z"
+                fill="#333333"
+            />
+            <path
+                d="M6 5H18V11H6V5ZM7 6V10H17V6H7Z"
+                fill="#666666"
+            />
+        </svg>
+    );
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((currentUser) => {
@@ -24,12 +43,16 @@ export default function Profile() {
                     name: currentUser.displayName || "Не указано",
                     email: currentUser.email || "Не указано",
                     phone: currentUser.phoneNumber || "Не указано",
-                    photo: currentUser.photoURL || "https://via.placeholder.com/150",
-                    uid: currentUser.uid
+                    photo: defaultAvatar, // Set SVG as default avatar
+                    uid: currentUser.uid,
                 });
             }
             setLoading(false);
         });
+
+        // Загрузка избранных игр
+        const favoriteIds = JSON.parse(localStorage.getItem("favorites")) || [];
+        setFavorites(favoriteIds);
 
         return () => unsubscribe();
     }, []);
@@ -43,70 +66,16 @@ export default function Profile() {
         }
     };
 
-    const handleFileChange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        if (!file.type.match('image.*')) {
-            setError("Пожалуйста, выберите файл изображения");
-            return;
-        }
-
-        if (file.size > 2 * 1024 * 1024) {
-            setError("Размер файла не должен превышать 2MB");
-            return;
-        }
-
-        try {
-            setUploading(true);
-            setError("");
-            setSuccess("");
-
-            // Загружаем файл в Firebase Storage
-            const storageRef = ref(storage, `avatars/${user.uid}/${file.name}`);
-            await uploadBytes(storageRef, file);
-
-            // Получаем URL загруженного файла
-            const photoURL = await getDownloadURL(storageRef);
-
-            // Обновляем профиль пользователя
-            await updateProfile(auth.currentUser, { photoURL });
-
-            // Обновляем состояние
-            setUser(prev => ({ ...prev, photo: photoURL }));
-            setSuccess("Аватар успешно обновлён!");
-        } catch (err) {
-            console.error("Ошибка при загрузке аватара:", err);
-            setError("Произошла ошибка при загрузке аватара");
-        } finally {
-            setUploading(false);
-        }
-    };
-
-    const removeAvatar = async () => {
-        try {
-            setUploading(true);
-            setError("");
-            setSuccess("");
-
-            // Устанавливаем стандартный аватар
-            await updateProfile(auth.currentUser, { photoURL: "" });
-
-            // Обновляем состояние
-            setUser(prev => ({ ...prev, photo: "https://via.placeholder.com/150" }));
-            setSuccess("Аватар удалён");
-        } catch (err) {
-            console.error("Ошибка при удалении аватара:", err);
-            setError("Произошла ошибка при удалении аватара");
-        } finally {
-            setUploading(false);
-        }
+    const removeFavorite = (id) => {
+        const updatedFavorites = favorites.filter((favId) => favId !== id);
+        setFavorites(updatedFavorites);
+        localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
     };
 
     return (
         <div className="profile-page">
-            <Container className="py-5">
-                <h2 className="text-center mb-5">Мой профиль</h2>
+            <Container className="profile__container py-5">
+                <h2 className="profile__title text-center mb-5">Мой профиль</h2>
 
                 {loading ? (
                     <div className="text-center">
@@ -114,107 +83,124 @@ export default function Profile() {
                         <p className="mt-3">Загрузка данных...</p>
                     </div>
                 ) : user ? (
-                    <Card className="profile-card shadow">
-                        <Card.Body className="p-4">
-                            <div className="text-center mb-4 position-relative">
-                                {/* <div className="profile-avatar mx-auto">
-                                    <img 
-                                        src={user.photo} 
-                                        alt="Аватар" 
-                                        className="rounded-circle"
-                                        onError={(e) => {
-                                            e.target.src = "https://via.placeholder.com/150";
-                                        }}
-                                    />
-                                    {!uploading && (
-                                        <>
-                                            <button 
-                                                className="avatar-upload-btn"
-                                                onClick={() => fileInputRef.current.click()}
-                                                title="Изменить аватар"
-                                            >
-                                                <FaCamera />
-                                            </button>
-                                            {user.photo && user.photo !== "https://via.placeholder.com/150" && (
-                                                <button 
-                                                    className="avatar-remove-btn"
-                                                    onClick={removeAvatar}
-                                                    title="Удалить аватар"
-                                                >
-                                                    <FaTimes />
-                                                </button>
-                                            )}
-                                        </>
+                    <div className="profile__layout">
+                        {/* Левая колонка - Профиль */}
+                        <div className="profile__column profile__column--left">
+                            <Card className="profile-card shadow">
+                                <Card.Body className="p-4">
+                                    <div className="profile__avatar-container text-center mb-4">
+                                        <div className="profile-avatar mx-auto">
+                                            {user.photo}
+                                        </div>
+                                        <h3 className="mt-3">{user.name}</h3>
+                                    </div>
+
+                                    <div className="profile-info">
+                                        <div className="info-item d-flex align-items-center mb-3">
+                                            <div className="icon-circle bg-primary">
+                                                <FaUser className="text-white" />
+                                            </div>
+                                            <div className="ms-3">
+                                                <h6 className="mb-0">Имя пользователя</h6>
+                                                <p className="mb-0">{user.name}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="info-item d-flex align-items-center mb-3">
+                                            <div className="icon-circle bg-success">
+                                                <FaEnvelope className="text-white" />
+                                            </div>
+                                            <div className="ms-3">
+                                                <h6 className="mb-0">Email</h6>
+                                                <p className="mb-0">{user.email}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="text-center mt-4">
+                                        <Button
+                                            variant="danger"
+                                            onClick={handleLogout}
+                                            className="logout-btn"
+                                        >
+                                            <FaSignOutAlt className="me-2" />
+                                            Выйти из аккаунта
+                                        </Button>
+                                    </div>
+                                </Card.Body>
+                            </Card>
+                        </div>
+
+                        {/* Правая колонка - Избранное */}
+                        <div className="profile__column profile__column--right">
+                            <Card className="favorites-card shadow">
+                                <Card.Header className="favorites-card__header">
+                                    <h5 className="mb-0">
+                                        <FaHeart className="me-2 text-danger" />
+                                        Избранное ({favorites.length})
+                                    </h5>
+                                </Card.Header>
+                                <Card.Body>
+                                    {favorites.length === 0 ? (
+                                        <Alert variant="info" className="text-center">
+                                            У вас пока нет избранных игр.{" "}
+                                            <Link to="/">Найдите игры</Link> для добавления!
+                                        </Alert>
+                                    ) : (
+                                        <ListGroup variant="flush" className="favorites-list">
+                                            {favorites.map((favId) => {
+                                                const game = games.find((g) => g.id.toString() === favId);
+                                                if (!game) return null;
+                                                return (
+                                                    <ListGroup.Item key={favId} className="favorites-list__item">
+                                                        <div className="d-flex align-items-center">
+                                                            <Link
+                                                                to={`/product/${game.id}`}
+                                                                className="favorites-list__image-link"
+                                                            >
+                                                                <img
+                                                                    src={game.img}
+                                                                    alt={game.title}
+                                                                    className="favorites-list__image"
+                                                                />
+                                                            </Link>
+                                                            <div className="favorites-list__info flex-grow-1">
+                                                                <Link
+                                                                    to={`/product/${game.id}`}
+                                                                    className="favorites-list__title"
+                                                                >
+                                                                    {game.title}
+                                                                </Link>
+                                                                <p className="favorites-list__price mb-0">
+                                                                    {game.price} ₽
+                                                                </p>
+                                                            </div>
+                                                            <Button
+                                                                variant="outline-danger"
+                                                                size="sm"
+                                                                onClick={() => removeFavorite(favId)}
+                                                                className="favorites-list__remove-btn"
+                                                            >
+                                                                Удалить
+                                                            </Button>
+                                                        </div>
+                                                    </ListGroup.Item>
+                                                );
+                                            })}
+                                        </ListGroup>
                                     )}
-                                </div> */}
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    onChange={handleFileChange}
-                                    accept="image/*"
-                                    style={{ display: 'none' }}
-                                />
-                                <h3 className="mt-3">{user.name}</h3>
-                                {uploading && (
-                                    <div className="mt-2">
-                                        <Spinner animation="border" size="sm" />
-                                        <span className="ms-2">Загрузка...</span>
-                                    </div>
-                                )}
-                            </div>
-
-                            {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-                            {success && <Alert variant="success" className="mt-3">{success}</Alert>}
-
-                            <div className="profile-info">
-                                <div className="info-item d-flex align-items-center mb-3">
-                                    <div className="icon-circle bg-primary">
-                                        <FaUser className="text-white" />
-                                    </div>
-                                    <div className="ms-3">
-                                        <h6 className="mb-0">Имя пользователя</h6>
-                                        <p className="mb-0">{user.name}</p>
-                                    </div>
-                                </div>
-
-                                <div className="info-item d-flex align-items-center mb-3">
-                                    <div className="icon-circle bg-success">
-                                        <FaEnvelope className="text-white" />
-                                    </div>
-                                    <div className="ms-3">
-                                        <h6 className="mb-0">Email</h6>
-                                        <p className="mb-0">{user.email}</p>
-                                    </div>
-                                </div>
-
-                                {/* <div className="info-item d-flex align-items-center mb-4">
-                                    <div className="icon-circle bg-info">
-                                        <FaPhone className="text-white" />
-                                    </div>
-                                    <div className="ms-3">
-                                        <h6 className="mb-0">Телефон</h6>
-                                        <p className="mb-0">{user.phone}</p>
-                                    </div>
-                                </div> */}
-                            </div>
-
-                            <div className="text-center mt-4">
-                                <Button
-                                    variant="danger"
-                                    onClick={handleLogout}
-                                    className="logout-btn"
-                                    disabled={uploading}
-                                >
-                                    <FaSignOutAlt className="me-2" />
-                                    Выйти из аккаунта
-                                </Button>
-                            </div>
-                        </Card.Body>
-                    </Card>
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    </div>
                 ) : (
                     <div className="text-center">
                         <p>Пользователь не авторизован</p>
-                        <Button variant="primary" onClick={() => navigate("/auth")}>
+                        <Button
+                            variant="primary"
+                            onClick={() => navigate("/auth")}
+                            className="auth-btn"
+                        >
                             Войти в аккаунт
                         </Button>
                     </div>
