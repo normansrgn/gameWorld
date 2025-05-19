@@ -10,13 +10,11 @@ export default function Games() {
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [showFilters, setShowFilters] = useState(false);
 
-    // Все доступные категории из данных игр
     const categories = [
         { value: "all", label: "Все игры", icon: <FaGamepad /> },
         { value: "Экшн", label: "Экшн", icon: <FaRunning /> },
         { value: "Стратегии", label: "Стратегии", icon: <FaChess /> },
         { value: "Шутеры", label: "Шутеры", icon: <FaFighterJet /> },
-        // Добавьте другие категории по необходимости
     ];
 
     const filteredGames = games.filter((game) =>

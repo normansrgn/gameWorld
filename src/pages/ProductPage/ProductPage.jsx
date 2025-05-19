@@ -19,6 +19,15 @@ export default function ProductPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isFavorite, setIsFavorite] = useState(false);
 
+    // Calculate average rating from comments
+    const calculateAverageRating = () => {
+        if (comments.length === 0) return 0;
+        const totalRating = comments.reduce((sum, comment) => sum + parseInt(comment.rating), 0);
+        return (totalRating / comments.length).toFixed(1);
+    };
+
+    const averageRating = calculateAverageRating();
+
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
@@ -27,7 +36,7 @@ export default function ProductPage() {
             setAuthChecked(true);
         });
 
-        // Загрузка комментариев
+        // Load comments
         const timer = setTimeout(() => {
             const savedComments = JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
             const productComments = product?.comments || [];
@@ -35,7 +44,7 @@ export default function ProductPage() {
             setIsLoading(false);
         }, 500);
 
-        // Проверка, находится ли игра в избранном
+        // Check if game is in favorites
         const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
         setIsFavorite(favorites.includes(id));
 
@@ -111,14 +120,14 @@ export default function ProductPage() {
         <div className="productPage">
             <Container className="productPage__container mt-4 mb-5">
                 <div className="row">
-                    {/* Левая колонка - изображение */}
+                    {/* Left column - image */}
                     <div className="col-md-4 mb-4">
                         <Card className="card h-100 product-image-card">
                             <Card.Img variant="top" src={product.img} alt={product.title} className="product-image" />
                         </Card>
                     </div>
 
-                    {/* Правая колонка - информация */}
+                    {/* Right column - info */}
                     <div className="col-md-8">
                         <Card className="mb-4 product-info-card">
                             <Card.Body>
@@ -129,12 +138,24 @@ export default function ProductPage() {
 
                                 <Card.Subtitle className="mb-2 text-muted product-category">{product.category}</Card.Subtitle>
 
+                                {/* Overall rating display */}
+                                <div className="overall-rating mb-3">
+                                    <strong>Средняя оценка: </strong>
+                                    <span className="rating-stars">
+                                        {[...Array(5)].map((_, i) => (
+                                            <span
+                                                key={i}
+                                                className={i < Math.round(averageRating) ? "star-filled" : "star-empty"}
+                                            >
+                                                ★
+                                            </span>
+                                        ))}
+                                        <span className="rating-value"> ({averageRating}/5)</span>
+                                    </span>
+                                </div>
+
                                 <Card.Text className="mt-3 product-description">
                                     <strong>О игре:</strong> {product.description}
-                                </Card.Text>
-
-                                <Card.Text className="product-download">
-                                    <strong>Где скачать:</strong> {product.download}
                                 </Card.Text>
 
                                 <Button
@@ -147,7 +168,7 @@ export default function ProductPage() {
                             </Card.Body>
                         </Card>
 
-                        {/* Системные требования */}
+                        {/* System requirements */}
                         <Card className="mb-4 system-requirements">
                             <Card.Header as="h5">Системные требования</Card.Header>
                             <ListGroup variant="flush">
@@ -159,7 +180,7 @@ export default function ProductPage() {
                             </ListGroup>
                         </Card>
 
-                        {/* Комментарии */}
+                        {/* Comments */}
                         <Card className="comments-section">
                             <Card.Header as="h5">Комментарии ({comments.length})</Card.Header>
                             <Card.Body className="p-0">
