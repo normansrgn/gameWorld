@@ -32,6 +32,13 @@ export default function ProductPage() {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
                 setUserName(user.displayName || "Аноним");
+            } else {
+                // Clear local storage on logout
+                localStorage.removeItem("favorites");
+                localStorage.removeItem(`comments_${id}`);
+                setComments([]);
+                setIsFavorite(false);
+                setUserName("");
             }
             setAuthChecked(true);
         });
@@ -80,7 +87,7 @@ export default function ProductPage() {
 
     const toggleFavorite = () => {
         if (!auth.currentUser) {
-            setError("Вы должны быть авторизованы для добавления в избранное.");
+            setError("Для добавления игры в избранное авторизуйтесь");
             return;
         }
 
@@ -158,10 +165,19 @@ export default function ProductPage() {
                                     <strong>О игре:</strong> {product.description}
                                 </Card.Text>
 
+                                {!auth.currentUser && (
+                                    <Link to="/auth">
+                                        <Alert variant="info" className="favorite-auth-alert mb-3">
+                                            Для добавления игры в избранное авторизуйтесь
+                                        </Alert>
+                                    </Link>
+                                )}
+
                                 <Button
                                     variant={isFavorite ? "outline-danger" : "outline-primary"}
                                     onClick={toggleFavorite}
-                                    className="mt-3"
+                                    className="mt-3 favorite-btn"
+                                    disabled={!auth.currentUser}
                                 >
                                     {isFavorite ? "Удалить из избранного" : "Добавить в избранное"}
                                 </Button>

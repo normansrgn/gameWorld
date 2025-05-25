@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Container, Row, Form, ButtonGroup, ToggleButton } from "react-bootstrap";
-import { FaSearch, FaFilter, FaGamepad, FaRunning, FaChess, FaFighterJet } from "react-icons/fa";
+import { FaSearch, FaFilter, FaSlidersH, FaGamepad, FaRunning, FaChess, FaFighterJet } from "react-icons/fa";
 import games from "../../components/GameCard/cards";
 import Card from "../../components/GameCard/Card";
 import "./games.scss";
@@ -51,8 +51,8 @@ export default function Games() {
                                 value="1"
                                 onChange={() => setShowFilters(!showFilters)}
                             >
-                                <FaFilter className="me-2" />
-                                Фильтры
+                                <FaFilter className="filter-icon" />
+                                <FaSlidersH className="sliders-icon" />
                             </ToggleButton>
                         </ButtonGroup>
                     </Form.Group>
